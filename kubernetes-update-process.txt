@@ -1,0 +1,91 @@
+run kubectl command to see the current version of the kuberntetes.
+[root@kubemaster db]# kubectl get nodes
+NAME         STATUS                     ROLES    AGE   VERSION
+k8s-head     Ready                      master   43h   v1.14.0
+k8s-node-1   Ready,SchedulingDisabled   <none>   43h   v1.14.0
+k8s-node-2   Ready                      <none>   43h   v1.14.0
+[root@kubemaster db]# 
+
+In my case, the version is v1.14.0
+
+View the name of the kube-controller pod:
+[root@kubemaster ~]# kubectl get pods -n kube-system
+NAME                                          READY   STATUS    RESTARTS   AGE
+calico-node-2kkj7                             2/2     Running   0          43h
+calico-node-9jsg8                             2/2     Running   0          43h
+calico-node-smbv2                             2/2     Running   0          43h
+coredns-fb8b8dccf-5bzz4                       1/1     Running   0          43h
+coredns-fb8b8dccf-mhhdd                       1/1     Running   0          43h
+etcd-k8s-head                                 1/1     Running   0          43h
+kube-apiserver-k8s-head                       1/1     Running   0          43h
+kube-controller-manager-k8s-head              1/1     Running   0          43h
+kube-proxy-8t7r7                              1/1     Running   0          43h
+kube-proxy-b2kh5                              1/1     Running   0          43h
+kube-proxy-hddfw                              1/1     Running   0          43h
+kube-scheduler-k8s-head                       1/1     Running   0          43h
+kubernetes-dashboard-5f96dfcc54-4tgkd         1/1     Running   0          43h
+traefik-ingress-controller-559458c885-4j9jh   1/1     Running   0          42h
+traefik-ingress-controller-gvf88              1/1     Running   0          42h
+traefik-ingress-controller-ldrfm              1/1     Running   0          42h
+[root@kubemaster ~]# 
+
+Set the VERSION variable to the latest stable release of Kubernetes:
+export VERSION=$(curl -sSL https://dl.k8s.io/release/stable.txt)
+
+Set the ARCH variable to the amd64 system:
+export ARCH=amd64
+
+
+
+View the latest stable version of Kubernetes using the variable:
+[root@kubemaster ~]# echo $VERSION
+v1.14.0
+[root@kubemaster ~]# 
+
+Curl the latest stable version of Kubernetes:
+curl -sSL https://dl.k8s.io/release/${VERSION}/bin/linux/${ARCH}/kubeadm > kubeadm
+
+
+Install the latest version of kubeadm:
+sudo install -o root -g root -m 0755 ./kubeadm /usr/bin/kubeadm
+
+
+
+Check the version of kubeadm:
+sudo kubeadm version
+
+
+Plan the upgrade:
+sudo kubeadm upgrade plan
+
+
+
+Apply the upgrade
+
+kubeadm upgrade apply v1.14.0
+
+
+
+View the differences between the old and new manifests:
+diff kube-controller-manager.yaml /etc/kubernetes/manifests/kube-controller-manager.yaml
+
+
+Curl the latest version of kubelet:
+curl -sSL https://dl.k8s.io/release/${VERSION}/bin/linux/${ARCH}/kubelet > kubelet
+
+Install the latest version of kubelet:
+sudo install -o root -g root -m 0755 ./kubelet /usr/bin/kubelet
+
+Restart the kubelet service:
+sudo systemctl restart kubelet.service
+
+
+
+Watch the nodes as they change version:
+kubect get nodes -w
+
+
+
+
+
+
