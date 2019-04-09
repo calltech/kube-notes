@@ -1,0 +1,15 @@
+Vagrant kubernetes cluster doesnt pick the right IP address  during the cluster creation,
+take the following steps to assign the correct IP to each node
+
+
+ssh into each node and edit the following file with vim or nano
+/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+put the following line in the file Environment="KUBELET_EXTRA_ARGS=--node-ip=<worker IP address>"
+make sure to put the correct IP address in the above command save and exit
+now restart daemon and kubeltes 
+
+$ systemctl daemon-reload
+$ systemctl restart kubelet
+
+
+
